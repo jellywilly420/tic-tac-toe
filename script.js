@@ -7,12 +7,6 @@ const game = (function () {
 
   let players = [];
 
-  const printBoard = () => {
-    for (const row of gameBoard) {
-      console.log(row);
-    }
-  };
-
   const isFull = () => {
     return (
       !gameBoard[0].includes("-") &&
@@ -59,18 +53,8 @@ const game = (function () {
     return null;
   };
 
-  const logResult = () => {
-    if (players[0].isPlayerMarker(game.evaluate())) {
-      console.log(`Player ${players[0].marker} wins!`);
-    } else if (players[1].isPlayerMarker(game.evaluate())) {
-      console.log(`Player ${players[1].marker} wins!`);
-    } else if (game.evaluate() === "draw") {
-      console.log(game.evaluate());
-    }
-  };
-
   const placeMarker = (xCoord, yCoord) => {
-    if (gameBoard[xCoord][yCoord] === "-") {
+    if (gameBoard[xCoord][yCoord] === "-" && !evaluate()) {
       gameBoard[xCoord][yCoord] = turn.get().marker;
     }
   };
@@ -99,8 +83,10 @@ const game = (function () {
     };
     // changes the player of the turn
     const change = function () {
-      counter++;
-      console.log(`It's player ${game.turn.get().marker}'s turn.`);
+      if (!evaluate()) {
+        counter++;
+        console.log(`It's player ${game.turn.get().marker}'s turn.`);
+      }
     };
     return { get, change };
   })();
@@ -113,36 +99,19 @@ const game = (function () {
     }
   };
 
-  const promptUser = function () {
-    let x = parseInt(prompt(`Player ${turn.get().marker}'s turn.\nEnter the number of the row you want to play in.`)) - 1;
-    let y = parseInt(prompt(`Player ${turn.get().marker}'s turn.\nEnter the number of the column you want to play in.`)) - 1;
-
-    return {x, y};
-  }
-
-  const loop = function () {
-    while (!evaluate()) {
-      console.log();
-      let coord = game.promptUser();
-      game.placeMarker(coord.x, coord.y);
-      game.turn.change();
-      game.printBoard();
-      console.log();
-    }
-  }
+  const getBoard = function () {
+    return gameBoard;
+  };
 
   return {
-    printBoard,
+    getBoard,
     clearBoard,
     addPlayer,
     placeMarker,
     isFull,
     evaluate,
-    logResult,
-    promptUser,
     players,
     turn,
-    loop,
   };
 })();
 
@@ -155,12 +124,47 @@ function createPlayer(letter) {
   return { marker, isPlayerMarker };
 }
 
-(function gameController() {
+(function gameSetup() {
   const playerX = createPlayer("X");
   const playerO = createPlayer("O");
   game.addPlayer(playerX);
   game.addPlayer(playerO);
-  game.printBoard();
-  game.loop();
-  game.logResult();
+})();
+
+(function displayController() {
+  const dialog = document.querySelector("dialog");
+  const startGameBtn = dialog.querySelector(".start-game-btn");
+  const cells = document.querySelectorAll(".cell");
+  const gameInfo = document.querySelector(".game-info");
+  dialog.showModal();
+
+  const renderBoard = function () {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (game.getBoard()[i][j] != "-") {
+          cells[i * 3 + j].innerText = game.getBoard()[i][j];
+        }
+      }
+    }
+  };
+
+  const updateInfo = function () {
+    gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
+  }
+  
+  startGameBtn.addEventListener("click", () => {
+    dialog.close();
+  });
+
+  for (const cell of cells) {
+    cell.addEventListener("click", (e) => {
+      game.placeMarker(
+        parseInt(e.target.getAttribute("data-x")),
+        parseInt(e.target.getAttribute("data-y"))
+      );
+      game.turn.change();
+      renderBoard();
+      updateInfo();
+    });
+  }
 })();

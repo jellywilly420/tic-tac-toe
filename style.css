@@ -1,0 +1,24 @@
+:root {
+    --cell-side: 150px;
+}
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.board {
+    border: 1px solid black;
+    width: fit-content;
+    margin: 2rem auto auto;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+}
+.cell {
+    width: var(--cell-side);
+    height: var(--cell-side);
+    background-color: darkcyan;
+    border: 1px solid black;
+}
