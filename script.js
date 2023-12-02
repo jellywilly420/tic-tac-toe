@@ -85,7 +85,6 @@ const game = (function () {
     const change = function () {
       if (!evaluate()) {
         counter++;
-        console.log(`It's player ${game.turn.get().marker}'s turn.`);
       }
     };
     return { get, change };
@@ -149,7 +148,18 @@ function createPlayer(letter) {
   };
 
   const updateInfo = function () {
-    gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
+    if (!game.evaluate()) {
+      gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
+    }
+    else {
+      if (game.evaluate() === "draw") {
+        gameInfo.innerText = `It's a draw.`
+      }
+      else {
+        gameInfo.innerText = `Player ${game.evaluate()} won.`
+      }
+      dialog.showModal();
+    }
   }
   
   startGameBtn.addEventListener("click", () => {
