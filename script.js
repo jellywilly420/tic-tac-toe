@@ -1,8 +1,8 @@
 const game = (function () {
   const gameBoard = [
-    ["O", "X", "X"],
-    ["X", "O", "O"],
-    ["O", "X", "X"],
+    ["-", "-", "-"],
+    ["-", "-", "-"],
+    ["-", "-", "-"],
   ];
 
   let players = [];
@@ -60,10 +60,10 @@ const game = (function () {
   };
 
   const logResult = () => {
-    if (playerX.isPlayerMarker(game.evaluate())) {
-      console.log("Player X wins!");
-    } else if (playerO.isPlayerMarker(game.evaluate())) {
-      console.log("Player O wins!");
+    if (players[0].isPlayerMarker(game.evaluate())) {
+      console.log(`Player ${players[0].marker} wins!`);
+    } else if (players[1].isPlayerMarker(game.evaluate())) {
+      console.log(`Player ${players[1].marker} wins!`);
     } else if (game.evaluate() === "draw") {
       console.log(game.evaluate());
     }
@@ -113,16 +113,36 @@ const game = (function () {
     }
   };
 
+  const promptUser = function () {
+    let x = parseInt(prompt(`Player ${turn.get().marker}'s turn.\nEnter the number of the row you want to play in.`)) - 1;
+    let y = parseInt(prompt(`Player ${turn.get().marker}'s turn.\nEnter the number of the column you want to play in.`)) - 1;
+
+    return {x, y};
+  }
+
+  const loop = function () {
+    while (!evaluate()) {
+      console.log();
+      let coord = game.promptUser();
+      game.placeMarker(coord.x, coord.y);
+      game.turn.change();
+      game.printBoard();
+      console.log();
+    }
+  }
+
   return {
-    placeMarker,
     printBoard,
-    evaluate,
-    isFull,
-    logResult,
-    addPlayer,
     clearBoard,
+    addPlayer,
+    placeMarker,
+    isFull,
+    evaluate,
+    logResult,
+    promptUser,
     players,
     turn,
+    loop,
   };
 })();
 
@@ -140,4 +160,7 @@ function createPlayer(letter) {
   const playerO = createPlayer("O");
   game.addPlayer(playerX);
   game.addPlayer(playerO);
+  game.printBoard();
+  game.loop();
+  game.logResult();
 })();
