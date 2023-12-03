@@ -59,6 +59,15 @@ const game = (function () {
     }
   };
 
+  function createPlayer(letter) {
+    const marker = letter;
+    const isPlayerMarker = (x) => {
+      return marker === x;
+    };
+
+    return { marker, isPlayerMarker };
+  }
+
   const addPlayer = (player) => {
     players.push(player);
   };
@@ -102,6 +111,50 @@ const game = (function () {
     return gameBoard;
   };
 
+  const gui = function () {
+    const dialog = document.querySelector("dialog");
+    const startGameBtn = document.querySelector(".start-game-btn");
+    const cells = document.querySelectorAll(".cell");
+    const gameInfo = document.querySelector(".game-info");
+
+    return { dialog, startGameBtn, cells, gameInfo };
+  };
+
+  const display = function () {
+    const renderBoard = function () {
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (game.getBoard()[i][j] != "-") {
+            gui().cells[i * 3 + j].innerText = game.getBoard()[i][j];
+          }
+        }
+      }
+    };
+
+    const updateInfo = function () {
+      if (!game.evaluate()) {
+        gui().gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
+      } else {
+        if (game.evaluate() === "draw") {
+          gui().gameInfo.innerText = `It's a draw.`;
+        } else {
+          gui().gameInfo.innerText = `Player ${game.evaluate()} won.`;
+        }
+        gui().dialog.showModal();
+      }
+    };
+
+    return { renderBoard, updateInfo };
+  };
+
+  (function () {
+    const playerX = createPlayer("X");
+    const playerO = createPlayer("O");
+    addPlayer(playerX);
+    addPlayer(playerO);
+    gui().dialog.showModal();
+  })();
+
   return {
     getBoard,
     clearBoard,
@@ -109,72 +162,27 @@ const game = (function () {
     placeMarker,
     isFull,
     evaluate,
+    gui,
+    display,
     players,
     turn,
   };
 })();
 
-function createPlayer(letter) {
-  const marker = letter;
-  const isPlayerMarker = (x) => {
-    return marker === x;
-  };
-
-  return { marker, isPlayerMarker };
-}
-
-(function gameSetup() {
-  const playerX = createPlayer("X");
-  const playerO = createPlayer("O");
-  game.addPlayer(playerX);
-  game.addPlayer(playerO);
-})();
-
-(function displayController() {
-  const dialog = document.querySelector("dialog");
-  const startGameBtn = dialog.querySelector(".start-game-btn");
-  const cells = document.querySelectorAll(".cell");
-  const gameInfo = document.querySelector(".game-info");
-  dialog.showModal();
-
-  const renderBoard = function () {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (game.getBoard()[i][j] != "-") {
-          cells[i * 3 + j].innerText = game.getBoard()[i][j];
-        }
-      }
-    }
-  };
-
-  const updateInfo = function () {
-    if (!game.evaluate()) {
-      gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
-    }
-    else {
-      if (game.evaluate() === "draw") {
-        gameInfo.innerText = `It's a draw.`
-      }
-      else {
-        gameInfo.innerText = `Player ${game.evaluate()} won.`
-      }
-      dialog.showModal();
-    }
-  }
-  
-  startGameBtn.addEventListener("click", () => {
-    dialog.close();
+(function eventController() {
+  game.gui().startGameBtn.addEventListener("click", () => {
+    game.gui().dialog.close();
   });
 
-  for (const cell of cells) {
+  for (const cell of game.gui().cells) {
     cell.addEventListener("click", (e) => {
       game.placeMarker(
         parseInt(e.target.getAttribute("data-x")),
         parseInt(e.target.getAttribute("data-y"))
       );
       game.turn.change();
-      renderBoard();
-      updateInfo();
+      game.display().renderBoard();
+      game.display().updateInfo();
     });
   }
 })();
