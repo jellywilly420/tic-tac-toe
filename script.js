@@ -116,9 +116,11 @@ const game = (function () {
     const startGameBtn = document.querySelector(".start-game-btn");
     const cells = document.querySelectorAll(".cell");
     const gameInfo = document.querySelector(".game-info");
+    const vsPlayer = document.querySelector("input#player");
+    const vsComputer = document.querySelector("input#computer");
 
-    return { dialog, startGameBtn, cells, gameInfo };
-  }) ();
+    return { dialog, startGameBtn, cells, gameInfo, vsComputer, vsPlayer };
+  })();
 
   const display = (function () {
     const renderBoard = function () {
@@ -126,9 +128,8 @@ const game = (function () {
         for (let j = 0; j < 3; j++) {
           if (game.getBoard()[i][j] != "-") {
             gui.cells[i * 3 + j].innerText = game.getBoard()[i][j];
-          }
-          else {
-            gui.cells[i * 3 + j].innerText = '';
+          } else {
+            gui.cells[i * 3 + j].innerText = "";
           }
         }
       }
@@ -148,7 +149,7 @@ const game = (function () {
     };
 
     return { renderBoard, updateInfo };
-  }) ();
+  })();
 
   (function () {
     const playerX = createPlayer("X");
@@ -158,20 +159,25 @@ const game = (function () {
     gui.dialog.showModal();
   })();
 
-  // returns the index of a random empty empty cell
+  // returns an object with xcoord and ycoord of a random empty empty cell
   const getRandomEmptyCell = function () {
     let xArr = [];
     let yArr = [];
     for (const cell of gui.cells) {
-      if (cell.innerText === '') {
-        xArr.push(parseInt(cell.getAttribute('data-x')));
-        yArr.push(parseInt(cell.getAttribute('data-y')));
+      if (cell.innerText === "") {
+        xArr.push(parseInt(cell.getAttribute("data-x")));
+        yArr.push(parseInt(cell.getAttribute("data-y")));
       }
     }
-    const xCoord = xArr[Math.floor(Math.random()*xArr.length)];
-    const yCoord = yArr[Math.floor(Math.random()*xArr.length)];
-    return xCoord*3+yCoord;
-  }
+    const random = Math.floor(Math.random() * xArr.length)
+    const xCoord = xArr[random];
+    const yCoord = yArr[random];
+    return { xCoord, yCoord };
+  };
+
+  const playComputerTurn = function () {
+    placeMarker(getRandomEmptyCell().xCoord, getRandomEmptyCell().yCoord);
+  };
 
   return {
     getBoard,
@@ -179,6 +185,7 @@ const game = (function () {
     addPlayer,
     placeMarker,
     getRandomEmptyCell,
+    playComputerTurn,
     isFull,
     evaluate,
     gui,
@@ -201,7 +208,7 @@ const game = (function () {
 
   for (const cell of game.gui.cells) {
     cell.addEventListener("click", (e) => {
-      if (cell.innerText === '') {
+      if (cell.innerText === "") {
         game.placeMarker(
           parseInt(e.target.getAttribute("data-x")),
           parseInt(e.target.getAttribute("data-y"))
