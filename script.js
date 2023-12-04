@@ -75,33 +75,6 @@ const game = (function () {
     players.push(player);
   };
 
-  const turn = (function () {
-    let counter = 0;
-    // returns the player whose turn it is. always starts the game with x
-    const get = function () {
-      if (counter === 0) {
-        return players.filter((player) => {
-          return player.isPlayerMarker("X");
-        })[0];
-      } else if (counter % 2 === 1) {
-        return players.filter((player) => {
-          return player.isPlayerMarker("O");
-        })[0];
-      } else {
-        return players.filter((player) => {
-          return player.isPlayerMarker("X");
-        })[0];
-      }
-    };
-    // changes the player of the turn
-    const change = function () {
-      if (!evaluate()) {
-        counter++;
-      }
-    };
-    return { get, change };
-  })();
-
   const clearBoard = function () {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
@@ -190,15 +163,13 @@ const game = (function () {
   };
 
   const placeRandomMarker = function () {
-    placeMarker(getRandomEmptyCell().xCoord, getRandomEmptyCell().yCoord);
+    const randomCell = getRandomEmptyCell();
+    placeMarker(randomCell.xCoord, randomCell.yCoord);
   };
 
-  const getType = function () {
-    if (player && computer) {
-      return "vs computer";
-    } else {
-      return "vs player";
-    }
+  const playComputerTurn = function () {
+    placeRandomMarker();
+    turn.change();
   };
 
   const reset = function () {
@@ -208,10 +179,45 @@ const game = (function () {
     }
     player = undefined;
     computer = undefined;
-    
+
     display.renderBoard();
     display.updateInfo();
   };
+
+  const turn = (function () {
+    let counter = 0;
+    // returns the player whose turn it is. always starts the game with x
+    const get = function () {
+      if (counter === 0) {
+        return players.filter((player) => {
+          return player.isPlayerMarker("X");
+        })[0];
+      } else if (counter % 2 === 1) {
+        return players.filter((player) => {
+          return player.isPlayerMarker("O");
+        })[0];
+      } else {
+        return players.filter((player) => {
+          return player.isPlayerMarker("X");
+        })[0];
+      }
+    };
+    // changes the player of the turn
+    const change = function () {
+      display.renderBoard();
+      display.updateInfo();
+
+      if (!evaluate()) {
+        counter++;
+        if (get() === game.computer) {
+          playComputerTurn();
+        }
+      }
+      display.renderBoard();
+      display.updateInfo();
+    };
+    return { get, change };
+  })();
 
   return {
     getBoard,
@@ -220,9 +226,9 @@ const game = (function () {
     placeMarker,
     getRandomEmptyCell,
     placeRandomMarker,
+    playComputerTurn,
     isFull,
     evaluate,
-    getType,
     reset,
     computer,
     player,
@@ -236,17 +242,27 @@ const game = (function () {
 (function eventsController() {
   game.gui.startGameBtn.addEventListener("click", () => {
     game.reset();
+
     if (game.gui.vsComputer.checked) {
       if (game.gui.playerMarkerX.checked) {
         game.player = game.players[0];
         game.computer = game.players[1];
-      }
-      else if (game.gui.playerMarkerO.checked) {
+      } else if (game.gui.playerMarkerO.checked) {
         game.computer = game.players[0];
         game.player = game.players[1];
       }
     }
+    else {
+      game.player = undefined;
+      game.computer = undefined;
+    }
+
     game.gui.dialog.close();
+
+    if (game.turn.get() === game.computer) {
+      game.placeRandomMarker();
+      game.turn.change();
+    }
   });
 
   for (const cell of game.gui.cells) {
@@ -255,13 +271,21 @@ const game = (function () {
         game.gui.dialog.showModal();
       }
       if (cell.innerText === "") {
-        game.placeMarker(
-          parseInt(e.target.getAttribute("data-x")),
-          parseInt(e.target.getAttribute("data-y"))
-        );
-        game.turn.change();
-        game.display.renderBoard();
-        game.display.updateInfo();
+        if (!Boolean(game.computer)) {
+          game.placeMarker(
+            parseInt(e.target.getAttribute("data-x")),
+            parseInt(e.target.getAttribute("data-y"))
+          );
+          game.turn.change();
+        } else if (Boolean(game.computer)) {
+          if (game.turn.get() === game.player) {
+            game.placeMarker(
+              parseInt(e.target.getAttribute("data-x")),
+              parseInt(e.target.getAttribute("data-y"))
+            );
+            game.turn.change();
+          }
+        }
       }
     });
   }
