@@ -9,6 +9,9 @@
   margin: 0;
   box-sizing: border-box;
 }
+dialog:has(input#player:checked) .choose-marker {
+  visibility: hidden;
+}
 .board {
   border: 1px solid black;
   width: fit-content;

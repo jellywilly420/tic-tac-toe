@@ -175,7 +175,7 @@ const game = (function () {
     return { xCoord, yCoord };
   };
 
-  const playComputerTurn = function () {
+  const placeRandomMarker = function () {
     placeMarker(getRandomEmptyCell().xCoord, getRandomEmptyCell().yCoord);
   };
 
@@ -185,7 +185,7 @@ const game = (function () {
     addPlayer,
     placeMarker,
     getRandomEmptyCell,
-    playComputerTurn,
+    placeRandomMarker,
     isFull,
     evaluate,
     gui,
