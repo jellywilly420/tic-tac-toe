@@ -7,6 +7,9 @@ const game = (function () {
 
   let players = [];
 
+  let computer;
+  let player;
+
   const isFull = () => {
     return (
       !gameBoard[0].includes("-") &&
@@ -169,7 +172,7 @@ const game = (function () {
         yArr.push(parseInt(cell.getAttribute("data-y")));
       }
     }
-    const random = Math.floor(Math.random() * xArr.length)
+    const random = Math.floor(Math.random() * xArr.length);
     const xCoord = xArr[random];
     const yCoord = yArr[random];
     return { xCoord, yCoord };
@@ -178,6 +181,23 @@ const game = (function () {
   const placeRandomMarker = function () {
     placeMarker(getRandomEmptyCell().xCoord, getRandomEmptyCell().yCoord);
   };
+
+  const getType = function () {
+    if (player && computer) {
+      return "vs computer";
+    } else {
+      return "vs player";
+    }
+  };
+
+  const reset = function () {
+    clearBoard();
+    if (turn.get() === players[1]) {
+      turn.change();
+    }
+    display.renderBoard();
+    display.updateInfo();
+  }
 
   return {
     getBoard,
@@ -188,6 +208,10 @@ const game = (function () {
     placeRandomMarker,
     isFull,
     evaluate,
+    getType,
+    reset,
+    computer,
+    player,
     gui,
     display,
     players,
@@ -197,17 +221,15 @@ const game = (function () {
 
 (function eventsController() {
   game.gui.startGameBtn.addEventListener("click", () => {
-    game.clearBoard();
-    if (game.turn.get() === game.players[1]) {
-      game.turn.change();
-    }
-    game.display.renderBoard();
-    game.display.updateInfo();
+    game.reset();
     game.gui.dialog.close();
   });
 
   for (const cell of game.gui.cells) {
     cell.addEventListener("click", (e) => {
+      if (game.evaluate()) {
+        game.gui.dialog.showModal();
+      }
       if (cell.innerText === "") {
         game.placeMarker(
           parseInt(e.target.getAttribute("data-x")),
