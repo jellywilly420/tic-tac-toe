@@ -158,11 +158,27 @@ const game = (function () {
     gui.dialog.showModal();
   })();
 
+  // returns the index of a random empty empty cell
+  const getRandomEmptyCell = function () {
+    let xArr = [];
+    let yArr = [];
+    for (const cell of gui.cells) {
+      if (cell.innerText === '') {
+        xArr.push(parseInt(cell.getAttribute('data-x')));
+        yArr.push(parseInt(cell.getAttribute('data-y')));
+      }
+    }
+    const xCoord = xArr[Math.floor(Math.random()*xArr.length)];
+    const yCoord = yArr[Math.floor(Math.random()*xArr.length)];
+    return xCoord*3+yCoord;
+  }
+
   return {
     getBoard,
     clearBoard,
     addPlayer,
     placeMarker,
+    getRandomEmptyCell,
     isFull,
     evaluate,
     gui,
@@ -185,7 +201,7 @@ const game = (function () {
 
   for (const cell of game.gui.cells) {
     cell.addEventListener("click", (e) => {
-      if (!cell.innerText) {
+      if (cell.innerText === '') {
         game.placeMarker(
           parseInt(e.target.getAttribute("data-x")),
           parseInt(e.target.getAttribute("data-y"))
