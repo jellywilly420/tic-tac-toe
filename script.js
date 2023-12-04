@@ -111,21 +111,24 @@ const game = (function () {
     return gameBoard;
   };
 
-  const gui = function () {
+  const gui = (function () {
     const dialog = document.querySelector("dialog");
     const startGameBtn = document.querySelector(".start-game-btn");
     const cells = document.querySelectorAll(".cell");
     const gameInfo = document.querySelector(".game-info");
 
     return { dialog, startGameBtn, cells, gameInfo };
-  };
+  }) ();
 
-  const display = function () {
+  const display = (function () {
     const renderBoard = function () {
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           if (game.getBoard()[i][j] != "-") {
-            gui().cells[i * 3 + j].innerText = game.getBoard()[i][j];
+            gui.cells[i * 3 + j].innerText = game.getBoard()[i][j];
+          }
+          else {
+            gui.cells[i * 3 + j].innerText = '';
           }
         }
       }
@@ -133,26 +136,26 @@ const game = (function () {
 
     const updateInfo = function () {
       if (!game.evaluate()) {
-        gui().gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
+        gui.gameInfo.innerText = `Player ${game.turn.get().marker}'s turn.`;
       } else {
         if (game.evaluate() === "draw") {
-          gui().gameInfo.innerText = `It's a draw.`;
+          gui.gameInfo.innerText = `It's a draw.`;
         } else {
-          gui().gameInfo.innerText = `Player ${game.evaluate()} won.`;
+          gui.gameInfo.innerText = `Player ${game.evaluate()} won.`;
         }
-        gui().dialog.showModal();
+        gui.dialog.showModal();
       }
     };
 
     return { renderBoard, updateInfo };
-  };
+  }) ();
 
   (function () {
     const playerX = createPlayer("X");
     const playerO = createPlayer("O");
     addPlayer(playerX);
     addPlayer(playerO);
-    gui().dialog.showModal();
+    gui.dialog.showModal();
   })();
 
   return {
@@ -169,20 +172,28 @@ const game = (function () {
   };
 })();
 
-(function eventController() {
-  game.gui().startGameBtn.addEventListener("click", () => {
-    game.gui().dialog.close();
+(function eventsController() {
+  game.gui.startGameBtn.addEventListener("click", () => {
+    game.clearBoard();
+    if (game.turn.get() === game.players[1]) {
+      game.turn.change();
+    }
+    game.display.renderBoard();
+    game.display.updateInfo();
+    game.gui.dialog.close();
   });
 
-  for (const cell of game.gui().cells) {
+  for (const cell of game.gui.cells) {
     cell.addEventListener("click", (e) => {
-      game.placeMarker(
-        parseInt(e.target.getAttribute("data-x")),
-        parseInt(e.target.getAttribute("data-y"))
-      );
-      game.turn.change();
-      game.display().renderBoard();
-      game.display().updateInfo();
+      if (!cell.innerText) {
+        game.placeMarker(
+          parseInt(e.target.getAttribute("data-x")),
+          parseInt(e.target.getAttribute("data-y"))
+        );
+        game.turn.change();
+        game.display.renderBoard();
+        game.display.updateInfo();
+      }
     });
   }
 })();
