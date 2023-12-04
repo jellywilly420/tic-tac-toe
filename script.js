@@ -121,8 +121,19 @@ const game = (function () {
     const gameInfo = document.querySelector(".game-info");
     const vsPlayer = document.querySelector("input#player");
     const vsComputer = document.querySelector("input#computer");
+    const playerMarkerX = document.querySelector("input#x");
+    const playerMarkerO = document.querySelector("input#o");
 
-    return { dialog, startGameBtn, cells, gameInfo, vsComputer, vsPlayer };
+    return {
+      dialog,
+      startGameBtn,
+      cells,
+      gameInfo,
+      vsComputer,
+      vsPlayer,
+      playerMarkerX,
+      playerMarkerO,
+    };
   })();
 
   const display = (function () {
@@ -195,9 +206,12 @@ const game = (function () {
     if (turn.get() === players[1]) {
       turn.change();
     }
+    player = undefined;
+    computer = undefined;
+    
     display.renderBoard();
     display.updateInfo();
-  }
+  };
 
   return {
     getBoard,
@@ -222,6 +236,16 @@ const game = (function () {
 (function eventsController() {
   game.gui.startGameBtn.addEventListener("click", () => {
     game.reset();
+    if (game.gui.vsComputer.checked) {
+      if (game.gui.playerMarkerX.checked) {
+        game.player = game.players[0];
+        game.computer = game.players[1];
+      }
+      else if (game.gui.playerMarkerO.checked) {
+        game.computer = game.players[0];
+        game.player = game.players[1];
+      }
+    }
     game.gui.dialog.close();
   });
 
