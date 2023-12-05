@@ -8,6 +8,22 @@
     <script src="script.js" defer async></script>
   </head>
   <body>
+    <header>
+      <h1>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          fill="#000000"
+          viewBox="0 0 256 256"
+        >
+          <path
+            d="M216,148H172V108h44a12,12,0,0,0,0-24H172V40a12,12,0,0,0-24,0V84H108V40a12,12,0,0,0-24,0V84H40a12,12,0,0,0,0,24H84v40H40a12,12,0,0,0,0,24H84v44a12,12,0,0,0,24,0V172h40v44a12,12,0,0,0,24,0V172h44a12,12,0,0,0,0-24Zm-108,0V108h40v40Z"
+          ></path>
+        </svg>
+        Tic-Tac-Toe
+      </h1>
+    </header>
     <div class="game-info">
       <p>Player X's turn.</p>
     </div>
@@ -31,16 +47,16 @@
     <dialog>
       <div class="choose-opponent">
         <p>play vs.</p>
+        <input type="radio" name="choose-opponent" id="player" checked />
         <label for="player">player</label>
-        <input type="radio" name="choose-opponent" id="player" checked>
+        <input type="radio" name="choose-opponent" id="computer" />
         <label for="computer">computer</label>
-        <input type="radio" name="choose-opponent" id="computer">
       </div>
       <div class="choose-marker">
+        <input type="radio" name="choose-marker" id="x" checked />
         <label for="x">X</label>
-        <input type="radio" name="choose-marker" id="x" checked>
+        <input type="radio" name="choose-marker" id="o" />
         <label for="o">O</label>
-        <input type="radio" name="choose-marker" id="o">
       </div>
       <button class="start-game-btn">Start new game</button>
     </dialog>
