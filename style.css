@@ -17,6 +17,75 @@ body {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  user-select: none;
+}
+dialog {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  border: 1px solid var(--clr-dark);
+  border-radius: 5px;
+  background-color: var(--clr-light);
+  font-size: 1.8rem;
+  padding: 1.5rem 3rem;
+}
+dialog::backdrop {
+  background-color: var(--clr-dark);
+  filter: opacity(.3);
+}
+dialog .choose-opponent {
+  margin-bottom: .5rem ;
+}
+dialog .choice-container {
+  position: relative;
+  text-align: center;
+  padding: .25rem 0;
+  border-radius: 7px;
+}
+dialog .choice-container:has(input[type="radio"]:not(:checked)):hover {
+  background-color: rgb(237, 236, 252)
+}
+dialog .choice-container:has(input[type="radio"]:checked) {
+  background-color: var(--clr-dark);
+}
+dialog .choice-container:has(input[type="radio"]:checked) label {
+  color: var(--clr-light);
+}
+dialog input[type="radio"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  opacity: 0;
+}
+dialog .choice-container {
+  padding-inline: 2rem;
+}
+dialog .choose-marker {
+  display: flex;
+}
+dialog .choose-marker * {
+  flex-grow: 1;
+}
+dialog p {
+  margin-bottom: .5rem;
+  color: var(--clr-dark);
+  text-decoration: underline;
+}
+dialog button {
+  display: block;
+  margin: 1rem auto 0;
+  font-size: 1.5rem;
+  padding: .25rem .5rem;
+  color: var(--clr-dark);
+  border: 1px solid var(--clr-dark);
+  border-radius: 7px;
+  background-color: var(--clr-light);
+  cursor: pointer;
+}
+dialog button:hover {
+  filter: brightness(.95);
+}
+dialog button:active {
+  filter: brightness(.9);
 }
 header {
   background-color: var(--clr-light);
@@ -37,7 +106,8 @@ header h1 {
 header svg {
   fill: var(--clr-dark);
 }
-dialog:has(input#player:checked) .choose-marker {
+dialog:has(input#player:checked) .choose-marker, 
+dialog:has(input#player:checked) p:last-of-type {
   visibility: hidden;
 }
 .board {
@@ -73,9 +143,6 @@ dialog:has(input#player:checked) .choose-marker {
   align-items: center;
   font-size: 8rem;
   cursor: pointer;
-}
-.cell > * {
-  transition: all 250ms ease;
 }
 
 @media only screen and (max-width: 550px) {

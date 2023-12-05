@@ -45,18 +45,25 @@
       </div>
     </div>
     <dialog>
+      <p>play vs.</p>
       <div class="choose-opponent">
-        <p>play vs.</p>
-        <input type="radio" name="choose-opponent" id="player" checked />
+        <div class="choice-container">
+          <input type="radio" name="choose-opponent" id="player" checked />
         <label for="player">player</label>
-        <input type="radio" name="choose-opponent" id="computer" />
-        <label for="computer">computer</label>
+        </div>
+        <div class="choice-container"><input type="radio" name="choose-opponent" id="computer" />
+          <label for="computer">computer</label></div>
       </div>
+      <p>play as</p>
       <div class="choose-marker">
-        <input type="radio" name="choose-marker" id="x" checked />
+        <div class="choice-container">
+          <input type="radio" name="choose-marker" id="x" checked />
         <label for="x">X</label>
-        <input type="radio" name="choose-marker" id="o" />
+        </div>
+        <div class="choice-container">
+          <input type="radio" name="choose-marker" id="o" />
         <label for="o">O</label>
+        </div>
       </div>
       <button class="start-game-btn">Start new game</button>
     </dialog>
